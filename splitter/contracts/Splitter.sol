@@ -1,6 +1,6 @@
 pragma solidity ^0.4.6;
 //Minimal contract functions
-contract Splitter705dot3A{
+contract Splitter{
     
     address public owner;
     address newMember;
@@ -18,7 +18,7 @@ contract Splitter705dot3A{
     
     event reportNumUsersExceeded(string _msg);
     
-    function Splitter705dot3A() public{
+    function Splitter() public{
       owner= msg.sender;
   }
     
