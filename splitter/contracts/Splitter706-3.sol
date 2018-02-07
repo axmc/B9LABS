@@ -1,6 +1,10 @@
 pragma solidity ^0.4.19 ;
 //Minimal contract functions 706-3
 // Added dust collection
+// added kill switch 
+
+// tested in remix
+
 contract Splitter{
     
     address public owner;
@@ -20,10 +24,12 @@ contract Splitter{
     
  function splitFunds(address recipient1, address recipient2) public payable returns (bool success){
         
+      if (msg.value == 0) throw; // bad input data
+
       uint amount = msg.value/2;
       uint isAmountOdd = msg.value % 2;
       
-      if (isAmountOdd != 0) {    //msg value is odd and there is a remainder
+      if (isAmountOdd != 0) {    //msg value is odd and there is a remainder return both halves to sender;
           userBalances[msg.sender] += 1;}
       
             userBalances[recipient1]  += amount;
@@ -39,8 +45,11 @@ contract Splitter{
     return  totalAmount;
         } 
     
-    
-
+    function killSwitch() public payable
+    {
+      if (msg.sender == owner) {
+        selfdestruct(owner);}
+    }
 }
     
     
