@@ -35,25 +35,17 @@ contract Splitter{
     function Splitter() public{
       owner= msg.sender;
 
-      // looks like the owner is not actually used, but confirms in remix
-  }
-    
- //>> Rob - It looks like type can be explicitly declared either within a function as here with address recipient1  and is good inside that function only 
- //   or globally above. It seems that parser complains 
- //   some times. Is there good practice recommendation ?
     
  function splitFunds(address recipient1, address recipient2) public payable returns (bool success){
         
       uint amount = msg.value/2;
             userBalances[recipient1]  += amount;
             userBalances[recipient2]  += amount; 
-              return true;
-
-//this works when I send amount of either wei or ether and check using the function userBalances.  So far so good
-
-// >> Rob - is this event positioned properly? I cannot see it fire in the grey remix window below the code .              
+             
+  
            
-         LogFundsSplit("funds have been split");
+         LogFundsSplit(recipient1,recipient2,msg.value);
+          return true;
     }
     
     
@@ -62,6 +54,8 @@ contract Splitter{
             totalAmount =this.balance;
     return  totalAmount;
         }
+
+
 // >> Rob- this has me stumped. totalAmount = this.balance will at least compile, but delivers null. If I define 
 
 //       totalAmount  = userBalances[recipient1] + userBalances[recipient2]; it will not compile
@@ -84,17 +78,6 @@ contract Splitter{
     function userBalances(address index) public constant returns (uint balanceAtAddress)  {
             return userBalances[index];
     
-        }
-// this function works fine, as I would think pointing to the mapping using the address as the index and the balance 
-// as the mapped value is how it should work.
-
-// but trying to simplify further, I tried this which offers a confusing result. I thought that the pattern 
-
-// <address>.balance would return the uint256 balance of that account. 
-
-        function simpleUserBalance(address directindex)public constant returns (uint balanceAtSimpleAddress){
-            balanceAtSimpleAddress = directindex.balance;
-            return balanceAtSimpleAddress;
         }
 
 }
