@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title> Document</title>
+
+		<script src= "./node_modules/web3/dist/web3.min.js"></script>
+
+	</head>
+
+
+	<body>
+		<input id="input" type="text">
+		<button id="button">Set</button>
+
+		<pre id="output">
+
+		</pre>
+
+
+
+		<script>
+				var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+
+						console.log(web3);
+
+						web3.eth.defaultAccount = web3.eth.accounts[0];
+
+						var splitterContract = web3.eth.contract([
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "userBalances",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "showContractTotal",
+		"outputs": [
+			{
+				"name": "totalAmount",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "adr1",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "adr2",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "LogFundsSplit",
+		"type": "event"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "killSwitch",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "recipient1",
+				"type": "address"
+			},
+			{
+				"name": "recipient2",
+				"type": "address"
+			}
+		],
+		"name": "splitFunds",
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	}
+]);
+
+				var foo = splitterContract.at('0x57287d8c3c936bf2ed71fe8f0ba7c39a1462d13e');
+
+				var button = document.getElementById('button');
+
+				var input = document.getElementById('input');
+
+
+				var output = document.getElementById('output');
+
+				button.addEventListener('click',function(){
+					foo.setFoo(input.value);
+
+					output.innerHTML = web3.toAscii(foo.getFoo());
+
+					});
+
+
+
+
+
+
+
+		</script>
+
+
+
+	</body>
+
+	</html>
