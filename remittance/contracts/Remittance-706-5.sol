@@ -1,6 +1,6 @@
 pragma solidity 0.4.19;
 
-// contract Remittance-708-3
+// contract Remittance-708-1
 
 // requires that Alice creates the contract and is the owner. Alice has to set up the transfer sending ether to the contract;
 
@@ -44,7 +44,7 @@ contract Remittance{
     event LogSentToCarol (uint amount, string _logmsg);
     event LogContractNotReady(string _logmsg);
     
-    function Remittance() public {
+    function Remittance() payable public {
       owner= msg.sender;
       releaseOK = false;
       contractReady = false;
