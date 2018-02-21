@@ -12,7 +12,10 @@
 
 
 	<body>
-		<input id="input" type="text">
+		<input id="input1" type="text">
+		<button id="button">Set</button>
+
+		<input id="input2" type="text">
 		<button id="button">Set</button>
 
 		<pre id="output">
@@ -140,6 +143,14 @@
 
 				var foo = splitterContract.at('0x57287d8c3c936bf2ed71fe8f0ba7c39a1462d13e');
 
+				var recipient1 = prompt("What is the address for recipient 1 ?");
+
+				var recipient2 = prompt("Who is recipient2 ?");
+
+				var valueToSend = prompt("How many ethers to send ?");
+
+				var showUserBalance = prompt("Enter user address to check balance?");
+
 				var button = document.getElementById('button');
 
 				var input = document.getElementById('input');
@@ -148,7 +159,7 @@
 				var output = document.getElementById('output');
 
 				button.addEventListener('click',function(){
-					foo.setFoo(input.value);
+					splitter.splitFunds(input.value);
 
 					output.innerHTML = web3.toAscii(foo.getFoo());
 
