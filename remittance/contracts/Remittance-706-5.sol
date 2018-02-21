@@ -1,6 +1,6 @@
 pragma solidity 0.4.19;
 
-// contract Remittance-708-1
+// contract Remittance-708-3
 
 // requires that Alice creates the contract and is the owner. Alice has to set up the transfer sending ether to the contract;
 
@@ -37,7 +37,7 @@ contract Remittance{
     //   offline or through another contract;
 
 
-    event LogInsufficientFundsFromAlice(uint amount, uint balance);
+   
     event LogPasswordMismatch(string _logmsg);
     event LogEmptyTransaction(string _logmsg);
     event LogContractReady(uint _value, string _logmsg);
@@ -62,7 +62,7 @@ contract Remittance{
 
  //================PART 1 SET UP THE REMITTANCE CONTRACT ======================================================
 
- function setUpTransfer ()  public returns (bool contractReady){
+ function setUpTransfer ()  public payable {
             
             
             uint _value;
@@ -88,7 +88,7 @@ contract Remittance{
                
                 LogContractReady(contractFunds, _logmsg);
 
-       return contractReady;
+     
 
   }
 
@@ -107,17 +107,23 @@ contract Remittance{
                 }
 
       if( (_alicePassword == alicePasswordHash) && (_bobPassword == bobPasswordHash)) {
+          
+           
+            carolsBalance = userAddresses[1] += contractFunds;
+            
+             LogContractReady(contractFunds, "passwords are ok");
 
-        carolsBalance = userAddresses[2] += contractFunds;
-        userAddresses[2]=0; // to prevent double calls
-        msg.sender.transfer(carolsBalance);
+            userAddresses[1] = 0; // to prevent double transfer re-entry;
+            contractFunds = 0; //zero out this to prevent double transfer;
+            msg.sender.transfer(carolsBalance);
 
 
 
-          LogSentToCarol(contractFunds, "Success - funds sent to Carol for conversion to BobCurrency");
+              LogSentToCarol(contractFunds, "Success - funds sent to Carol for conversion to BobCurrency");
+              throw; }
 
 
-        }
+        
 
 
          LogPasswordMismatch("Password Mismatch- nothing released");
