@@ -1,5 +1,4 @@
-
-pragma solidity 0.4.19;
+pragma solidity ^0.4.19;
 
 // contract Remittance-709-2
 
@@ -7,7 +6,7 @@ pragma solidity 0.4.19;
 // Alice creates the contract and is the owner
 // Alice stages the contract by sending pw1 and pw2 to the contract and a value to be transferred;
 
-// the hashes of those passwords are stored in the contract and are not returned
+// the hashes of those passwords are stored in the contract
 
 // a bad actor would associates those passwords only with Alice's address not their hash because he could not be certain 
 // of the hashing algorithm used by the contract;
@@ -57,11 +56,8 @@ contract Remittance {
     // offline or through another contract;
     // Bob does not interact with the contract;
 
-
-   
-    event LogPasswordMismatch(string _logmsg);
     event LogEmptyTransaction(string _logmsg);
-    event LogContractReady(uint _value, string _logmsg, bytes32 _pw1Hash, bytes32 _pw2Hash);
+    event LogContractReady(uint _value, string _logmsg,bytes32 pw1Hash, bytes32 pw2Hash);
     event LogSentToCarol (uint amount, string _logmsg);
     event LogContractNotReady(string _logmsg);
 
@@ -88,31 +84,49 @@ contract Remittance {
      }
 
 
- //================PART 2 SET UP THE REMITTANCE CONTRACT ======================================================
+ //================PART 2 SET UP PASSWORDS ======================================================
 
- function setUpTransfer ( bytes32 password1, bytes32 password2)  public payable {
+ 	function setUpPasswords(bytes32 pwForCarol, bytes32 pwForBob) view returns (bytes32 offline_pw1,bytes32 offline_pw2) {
+
+ 						 // generate the password hashes 
+
+
+        		 pw1Hash = makeHashSecret(pwForCarol); 
+        		 pw2Hash = makeHashSecret(pwForBob); 
+
+        		 offline_pw1 = pw1Hash;
+        		 offline_pw2 = pw2Hash;
+
+        		 return (offline_pw1,offline_pw2);
+
+
+ 	}
+
+
+ //================PART 3 LOAD FUNDS INTO THE REMITTANCE CONTRACT ======================================================
+
+
+ function setUpTransfer () public payable returns (bool){
             
             
             uint _value; 
-            string memory _logmsg;
+           
 
                  require(msg.sender == owner);   // the message must come from Alice
+
+                 alice_adr = msg.sender;
          
                  require(msg.value > 0) ;
 
-
-        // generate the password hashes 
-
-        		 pw1Hash = makeHashSecret(password1);
-        		 pw2Hash = makeHashSecret(password2); 
 
                 contractFunds = contractFunds += msg.value;  // transfer Alice's funds into the contract
                 contractReady = true;
 
                 _value = contractFunds;
-                _logmsg = "Ready for Carol to execute the contract";
-               
-                LogContractReady(_value, _logmsg, pw1Hash, pw2Hash); 
+                
+                LogContractReady(_value, "Ready for Carol to execute the contract and send hashes offline",pw1Hash,pw2Hash); 
+
+                return (contractReady);
 
   }
 
@@ -120,13 +134,11 @@ contract Remittance {
 
 function checkPasswords (bytes32 _alicePassword, bytes32 _bobPassword) public returns (bool) {
 
-    	// where the _alicePassword and _bobPassword are transaction passwords for the transfer not account passwords;
+    	// where the _alicePassword and _bobPassword are the hash that Alice sent out and were delivered offline to Carol
+    	// one by email and the other in person.
 
       require(contractReady);
-      require (msg.sender == owner);
-
-      _alicePassword = makeHashSecret(_alicePassword);
-      _bobPassword = makeHashSecret(_bobPassword);
+   
 
       require(_alicePassword == pw1Hash);
       require(_bobPassword == pw2Hash);
@@ -137,7 +149,6 @@ function checkPasswords (bytes32 _alicePassword, bytes32 _bobPassword) public re
 
       return(releaseOK);
 
-       LogPasswordMismatch("Password Mismatch- nothing released");
        
 }
 
