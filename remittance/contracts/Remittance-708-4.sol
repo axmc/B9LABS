@@ -1,7 +1,8 @@
 
 pragma solidity 0.4.19;
 
-// contract Remittance-708-4
+// contract Remittance-709-1
+
 
 // Alice creates the contract and then stages it by sending pw1 and pw2 to the contract and a value to be transferred;
 
@@ -73,14 +74,16 @@ contract Remittance{
         selfdestruct(owner);}
     }
 
-     //================PART 1 SET UP THE HASH SECRET ALGORITHM ======================================================
+    
+         //================PART 1 SET UP THE HASH SECRET ALGORITHM ======================================================
 
-     function hashSecret(bytes32 secret) public constant returns(bytes32 hashSecret) {
+     function hashSecret(bytes32 secret) internal constant returns(bytes32 hashSecret) {
 
      		if(msg.sender !=owner) throw; 
 
      		return keccak256(secret);
      }
+
 
  //================PART 2 SET UP THE REMITTANCE CONTRACT ======================================================
 
@@ -103,8 +106,8 @@ contract Remittance{
 
         // thus all the above are ok and we can proceed to the generation of password hashes;
 
-        		bytes32 pw1Hash = hashSecret (password1);
-        		bytes32 pw2Hash = hashSecret(password2); 
+        		 pw1Hash = hashSecret(password1);
+        		 pw2Hash = hashSecret(password2); 
 
                 contractFunds = contractFunds += msg.value;
                 contractReady = true;
@@ -142,7 +145,7 @@ contract Remittance{
            
             carolsBalance = userAddresses[1] += contractFunds;
             
-             LogContractReady(contractFunds, "passwords are ok");
+             LogContractReady(contractFunds, "passwords are ok", pw1Hash,pw2Hash);
 
             userAddresses[1] = 0; // to prevent double transfer re-entry;
             contractFunds = 0; //zero out this to prevent double transfer;
