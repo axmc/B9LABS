@@ -1,6 +1,20 @@
 pragma solidity ^0.4.19;
 
-// contract Remittance-709-5A with Rob's suggestions March 1 to add address info to the mix.
+// contract Remittance-710-1
+
+// stretch Goals
+
+// SG1 add a deadline
+// SG2 Ad a limit to how far in the future the deadline can be
+// SG3 Add a kill switch
+// SG4 plug a security hole by changing one password to the recipients address
+// SG5 make the contract a utility that can be used by David, Emma nad anybody with an address;
+
+// SG6 make you the owner take a cut of the Ethers smaller than what it would cost Alice to deploy the same contractd herself.
+
+
+
+
 
 // added making the properRecipient part of the struct so that it becomes a general case instead of just Carol;
 
@@ -23,6 +37,10 @@ pragma solidity ^0.4.19;
 contract Remittance {
     
     address public owner;
+
+    bool public contractValid;
+
+    uint contractLength;
     
     
     struct RemittanceStruct {
@@ -39,13 +57,52 @@ contract Remittance {
     
     event LogSentToValidUser (uint amount, string _logmsg);
 
+// End of Inits=======================================================================
 
-     function Remittance() public payable {
+ // In the constructor, set a limit in minutes for the contact to be valid.
+ // If Alice does not fund the contract within 22 minutes of creation it will not work
+ // If Carol does not claim the funds within 22 mintues of creation it will not work and funds will be 
+ // returned to Alice.
+
+
+
+     function Remittance(uint minsValid) public payable {
+
+      require(minsValid <22); // the max for any contract validity period is 22 minutes;
+      contractLength = now + minsValid minutes;
+
+
+
       owner= msg.sender;
      
 
 
   }
+
+
+// =================================Stretch Goal 1 add deadline                  /////
+
+    function isContractActive() public returns (bool contractValid){
+          contractValid = false;
+          if (now < contractLength) contractValid =true;
+          return (contractValid);
+
+    }
+
+
+// =================================Stretch Goal 2 set limit to how far the deadline can be ===============
+
+        //  done in constructor with require(minsValid < nn  where nn is the number of minutes of validity)
+
+
+  //=================Stretch Goal 3  ====================================================================
+
+    function killSwitch() public 
+    {
+      if (msg.sender == owner) {
+        selfdestruct(owner);}
+    }
+    //===================================================================================================
   
   //anyone who sends funds to the contract along with the correct passwords gets put into the struct table 
  
@@ -55,7 +112,7 @@ contract Remittance {
 
     function sendRemittance( bytes32 pwHash,address _properRecipient) public payable returns (bool) {
         
-       
+        require(contractValid == true);
         
         remittanceStructs[pwHash].remittanceAgent = properRecipient;
         remittanceStructs[pwHash].properRecipient = _properRecipient;
@@ -71,7 +128,8 @@ contract Remittance {
     
    function claimFunds(bytes32 pw1) public payable returns (bool success) {
 
-       
+       require(contractValid == true);
+
        bytes32 key =hasher(pw1,msg.sender);
        
       require(remittanceStructs[key].amount > 0);
