@@ -66,14 +66,15 @@ contract Remittance {
 
 
 
-    // check to see if contract is active, ie within deadline set by Alice;
+    // check to see if contract is active, ie within deadline set by Alice
 
 
-    function isDealActive() public returns (bool contractValid){
+    function isDealActive() public returns (bool contractValid) {
 
     	   contractValid = false;
           
-          require (now <dealDeadline) contractValid = true;
+          require(now < dealDeadline);
+          contractValid = true;
 
           return (contractValid);
 
@@ -100,7 +101,7 @@ contract Remittance {
         isDealActive();
         require(contractValid == true); 
                             
-	        remittanceStructs[pwHash].remittanceAgent = properRecipient;
+	        remittanceStructs[pwHash].remittanceAgent = msg.sender;
 	        remittanceStructs[pwHash].properRecipient = _properRecipient;
 	        remittanceStructs[pwHash].amount = msg.value;
 
