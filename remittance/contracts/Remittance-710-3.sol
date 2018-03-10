@@ -44,6 +44,7 @@ contract Remittance {
     address public owner;
     address properRecipient;
 
+    bool public contractUnderMax;
     bool public contractValid;
 
     uint contractLength;
@@ -113,7 +114,7 @@ contract Remittance {
 // Alice can set the number of minutes she wants her offer to be valid, after which she can claim ether back;
 
 
-       function setMaxDL (uint _maxMins){
+       function setMaxDL (uint _maxMins) public {
 
         require (msg.sender == owner);
 
@@ -123,7 +124,7 @@ contract Remittance {
 
           maxDeadline = now +epochSeconds;
 
-        contractValid = true;
+          contractUnderMax = true;
 
     }
 
